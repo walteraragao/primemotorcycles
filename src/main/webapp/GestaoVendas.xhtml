@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/templates/Layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<ui:define name="corpo">
+	
+		<f:metadata>
+			<f:viewAction action="#{gestaoVendasBean.consultar}" />
+		</f:metadata>
+		
+		<h1>Gestão de Vendas</h1>
+		
+		<h:form id="frm">
+	
+			<p:messages autoUpdate="true" />
+	
+			<p:toolbar>
+				<f:facet name="left">
+					<p:commandButton value="Nova Venda" icon="ui-icon-document"
+						action="#{gestaoVendasBean.prepararNovoCadastro}"
+						process="@this" update="venda-dialog"
+						oncomplete="PF('edicaoVendaDialog').show()" />
+				</f:facet>
+			</p:toolbar>
+			
+			<p:dataTable value="#{gestaoVendasBean.listaVendas}" var="venda"
+					emptyMessage="Nenhuma venda cadastrada." rows="10" 
+					paginator="true" paginatorPosition="bottom"
+					style="margin-top: 10px" id="venda-table">
+					
+				<p:column headerText="Nome do Cliente" sortBy="#{venda.cliente.nome}" width="20%">
+					<h:outputText value="#{venda.cliente.nome}" />
+				</p:column>
+				<p:column headerText="CPF do Cliente" sortBy="#{venda.cliente.cpf}" width="20%">
+					<h:outputText value="#{venda.cliente.cpf}" />
+				</p:column>	
+				<p:column headerText="Cor da Motocicleta" width="20%">
+					<h:outputText value="#{venda.motocicleta.cor}" />
+				</p:column>	
+				<p:column headerText="Modelo da Motocicleta" width="20%">
+					<h:outputText value="#{venda.motocicleta.modelo}" />
+				</p:column>
+				<p:column headerText="Ano da Motocicleta" width="20%">
+					<h:outputText value="#{venda.motocicleta.ano}" />
+				</p:column>
+				<p:column headerText="Valor Pago" width="200">
+					<h:outputText value="#{venda.motocicleta.valor}">
+						<f:convertNumber pattern="R$ #,##0.00" />
+					</h:outputText>
+				</p:column>
+				
+			</p:dataTable>
+		
+			<p:dialog header="Nova Venda" widgetVar="edicaoVendaDialog" id="venda-dialog"
+					resizable="false" modal="true" closeOnEscape="true">
+				
+				<p:messages id="msgs-dialog" />
+				
+				<h:panelGrid columns="2" id="painel-dialog">
+					
+					<p:outputLabel value="Clientes" for="clientes" />
+						<p:selectOneMenu id="clientes" value="#{gestaoVendasBean.vendaEdicao.cliente.id}">
+							<f:selectItem itemLabel="Selecione" />
+						<f:selectItems value="#{gestaoVendasBean.todosClientes}" var="cliente" itemLabel="#{cliente.nome}" itemValue="#{cliente.id}" />
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="Motocicletas" for="motocicletas" />
+						<p:selectOneMenu id="motocicletas" value="#{gestaoVendasBean.vendaEdicao.motocicleta.id}">
+							<!-- <p:ajax listener="#{gestaoVendasBean.alteraPreco}" update="preco" /> -->
+							<f:selectItem itemLabel="Selecione" />
+						<f:selectItems value="#{gestaoVendasBean.todasMotocicletas}" var="motocicleta" itemLabel="#{motocicleta.marca} #{motocicleta.modelo}" itemValue="#{motocicleta.id}" />
+					</p:selectOneMenu> 
+										
+					<h:outputText value="Preço" for="preco" />
+					<h:outputText value="" /> <!-- #{gestaoVendasBean.preco} -->
+					
+					<p:outputLabel/>
+					<p:outputLabel/>
+					<p:outputLabel/>
+					
+					<p:commandButton value="Realizar Venda" id="salvar-button"
+						action="#{gestaoVendasBean.salvar}"
+						process="venda-dialog" update="venda-table msgs-dialog painel-dialog"
+						oncomplete="if (!args.validationFailed) PF('edicaoVendaDialog').hide()" />
+				</h:panelGrid>
+			</p:dialog>
+		
+		</h:form>
+		
+	</ui:define>
+</ui:composition>

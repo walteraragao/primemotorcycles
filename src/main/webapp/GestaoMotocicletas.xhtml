@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/templates/Layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<ui:define name="corpo">
+		<f:metadata>
+			<f:viewAction action="#{gestaoMotocicletasBean.consultar}" />
+		</f:metadata>
+	
+		<h1>Cadastro de Motocicletas</h1>
+	
+		<h:form id="frm">
+	
+			<p:messages autoUpdate="true" />
+	
+			<p:toolbar>
+				<f:facet name="left">
+					<p:commandButton value="Nova Motocicleta" icon="ui-icon-document"
+						action="#{gestaoMotocicletasBean.prepararNovoCadastro}"
+						process="@this" update="motocicletas-dialog"
+						oncomplete="PF('edicaoMotocicletaDialog').show()" />
+				</f:facet>
+			</p:toolbar>
+	
+			<p:dataTable value="#{gestaoMotocicletasBean.todasMotocicletas}" var="motocicleta"
+					emptyMessage="Nenhuma motocicleta cadastrada." rows="10" 
+					paginator="true" paginatorPosition="bottom"
+					style="margin-top: 10px" id="motocicleta-table">
+					
+				<p:column headerText="Marca" width="15%" sortBy="#{motocicleta.marca}">
+					<h:outputText value="#{motocicleta.marca.descricao}" />
+				</p:column>
+					
+				<p:column headerText="Modelo" width="15%" sortBy="#{motocicleta.modelo}">
+					<h:outputText value="#{motocicleta.modelo}" />
+				</p:column>
+				
+				<p:column headerText="Cor" width="15%">
+					<h:outputText value="#{motocicleta.cor}" />
+				</p:column>
+				
+				<p:column headerText="CNPJ" width="15%">
+					<h:outputText value="#{motocicleta.placa}" />
+				</p:column>
+				
+				<p:column headerText="Ano" width="15%">
+					<h:outputText value="#{motocicleta.ano}" />
+				</p:column>
+				
+				<p:column headerText="Valor" width="15%">
+					<h:outputText value="#{motocicleta.valor}">
+						<f:convertNumber pattern="R$ #,##0.00" />
+					</h:outputText>
+				</p:column>
+				
+				<p:column headerText="Ações">
+					<p:commandButton icon="ui-icon-pencil" title="Editar" actionListener="#{gestaoMotocicletasBean.prepararEdicao(motocicleta.id)}"						
+						oncomplete="PF('edicaoMotocicletaDialog').show()"						
+						process="@this"
+						/> 						
+            		
+            		<p:commandButton icon="ui-icon-trash" title="Excluir" process="@this" actionListener="#{gestaoMotocicletasBean.deletar(motocicleta)}" update="motocicleta-table"/>
+				</p:column>
+			</p:dataTable>
+		
+			<p:dialog header="Nova Motocicleta" widgetVar="edicaoMotocicletaDialog" id="motocicletas-dialog"
+					resizable="false" modal="true" closeOnEscape="true">
+				
+				<p:messages id="msgs-dialog" />
+				
+				<h:panelGrid columns="2" id="painel-dialog">
+				
+					<p:outputLabel value="Marca" for="marca" />
+						<p:selectOneMenu id="marca" value="#{gestaoMotocicletasBean.motocicletaEdicao.marca}">
+							<f:selectItem itemLabel="Selecione" />
+						<f:selectItems value="#{gestaoMotocicletasBean.marcasMotocicletas}" var="marca" itemLabel="#{marca.descricao}" itemValue="#{marca}" />
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="Modelo" for="modelo" />
+					<p:inputText id="modelo" size="18" maxlength="80" 
+						value="#{gestaoMotocicletasBean.motocicletaEdicao.modelo}" />
+					
+					<p:outputLabel value="Cor" for="cor" />
+					<p:inputText id="cor" size="18" maxlength="120"
+						value="#{gestaoMotocicletasBean.motocicletaEdicao.cor}" />
+					
+					<p:outputLabel value="Placa" for="placa" />
+					<p:inputText id="placa" size="18" maxlength="18"
+						value="#{gestaoMotocicletasBean.motocicletaEdicao.placa}" />
+					
+					<p:outputLabel value="Ano" for="ano" />
+					<p:inputText id="ano" size="18" maxlength="10"
+						value="#{gestaoMotocicletasBean.motocicletaEdicao.ano}">						
+					</p:inputText>
+					
+					<p:outputLabel value="Valor" for="valor" />
+					<p:inputText id="valor" size="18" maxlength="10" value="#{gestaoMotocicletasBean.motocicletaEdicao.valor}">						
+					</p:inputText>
+					
+					<p:outputLabel/>
+					<p:commandButton value="Salvar" id="salvar-button"
+						action="#{gestaoMotocicletasBean.salvar}"
+						process="motocicletas-dialog" update="motocicleta-table msgs-dialog painel-dialog"
+						oncomplete="if (!args.validationFailed) PF('edicaoMotocicletaDialog').hide()" />
+				</h:panelGrid>
+			</p:dialog>
+		
+		</h:form>
+		
+	</ui:define>
+</ui:composition>
